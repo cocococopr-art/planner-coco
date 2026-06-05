@@ -377,8 +377,7 @@ body {
 }
 
 /* Robust tab visibility: avoid transform percentage causing blank Planner page */
-.page { display: none; }
-.page.active-page { display: block; min-width: 100%; }
+/* page visibility controlled by JS only */
 #pages-wrap { transform: none !important; }
 
 /* ── PAGE 1: INPUT ── */
@@ -2130,40 +2129,24 @@ function applyIphoneTabClass(idx) {
 function switchTab(idx) {
   currentTab = idx;
 
+  // タブボタン
   const inputBtn = document.getElementById('tab-input-btn');
   const plannerBtn = document.getElementById('tab-planner-btn');
   if (inputBtn) inputBtn.classList.toggle('active', idx === 0);
   if (plannerBtn) plannerBtn.classList.toggle('active', idx === 1);
 
-  const wrap = document.getElementById('pages-wrap');
+  // ページ表示: display切替（iOS/PC共通）
+  const inputPage = document.getElementById('page-input');
+  const plannerPage = document.getElementById('page-planner');
+  if (inputPage) inputPage.style.display = idx === 0 ? 'block' : 'none';
+  if (plannerPage) plannerPage.style.display = idx === 1 ? 'block' : 'none';
 
-  if (isIOSDevice() || window.innerWidth <= 768) {
-    if (wrap) {
-      wrap.style.transform = 'none';
-    }
-    applyIphoneTabClass(idx);
-
-    const inputPage = document.getElementById('page-input');
-    const plannerPage = document.getElementById('page-planner');
-    if (inputPage) inputPage.style.display = idx === 0 ? 'block' : 'none';
-    if (plannerPage) plannerPage.style.display = idx === 1 ? 'block' : 'none';
-
-    if (idx === 1) {
-      setTimeout(() => {
-        updateHeaderDisplay();
-        renderPlanner();
-        updateHeaderCount();
-        window.scrollTo({ top: 0, behavior: 'auto' });
-      }, 0);
-    }
-    return;
+  // プランナー描画
+  if (idx === 1) {
+    updateHeaderDisplay();
+    renderPlanner();
+    updateHeaderCount();
   }
-
-  if (wrap) {
-    wrap.style.transform = `translateX(-${idx * 100}%)`;
-  }
-
-  if (idx === 1) renderPlanner();
 }
 
 function openNativePicker(id) {
@@ -2175,15 +2158,7 @@ function openNativePicker(id) {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  if (isIOSDevice() || window.innerWidth <= 768) {
-    applyIphoneTabClass(currentTab || 0);
-    const inputPage = document.getElementById('page-input');
-    const plannerPage = document.getElementById('page-planner');
-    if (inputPage) inputPage.style.display = (currentTab || 0) === 0 ? 'block' : 'none';
-    if (plannerPage) plannerPage.style.display = (currentTab || 0) === 1 ? 'block' : 'none';
-  }
-});
+// DOMContentLoaded: init()内のswitchTabで制御
 
 
 // Touch swipe
