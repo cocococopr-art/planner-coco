@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,user-scalable=no,maximum-scale=1.0">
 <title>My Daily Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22My%20Daily%20Planner%22%2C%22short_name%22%3A%22Planner%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23FAF7F2%22%2C%22theme_color%22%3A%22%233B6E5A%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527%2520viewBox%3D%25270%25200%252096%252096%2527%253E%253Crect%2520width%3D%252796%2527%2520height%3D%252796%2527%2520rx%3D%252720%2527%2520fill%3D%2527%25233B6E5A%2527%2F%253E%253Ctext%2520x%3D%252748%2527%2520y%3D%252766%2527%2520font-size%3D%252756%2527%2520text-anchor%3D%2527middle%2527%253E%25F0%259F%2593%2594%253C%2F%2520text%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="My Planner">
+<meta name="theme-color" content="#3B6E5A">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Yomogi&family=Zen+Kurenaido&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -112,8 +117,10 @@ body{
 .tab.on{color:var(--gr);border-bottom-color:var(--gr)}
 
 /* ── PAGES ── */
-#pg0,#pg1{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0}
-#pg0.on,#pg1.on{display:block}
+#pg0{display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;min-height:0}
+#pg0.on{display:block}
+#pg1{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+#pg1.on{display:flex}
 
 /* ══════════════════════════
    PAGE 0 — INPUT
@@ -254,14 +261,133 @@ body{
 
 /* Planner scroll body */
 .pl-body{
-  padding:16px 16px 60px 20px;
+  padding:0;
   background-image:
     linear-gradient(var(--line) 1px, transparent 1px),
     linear-gradient(90deg, transparent 38px, var(--red-line) 38px, var(--red-line) 40px, transparent 40px);
   background-size:100% 32px, 100% 100%;
   background-position:0 8px, 0 0;
-  min-height:100%;
+  flex:1;
+  min-height:0;
+  display:flex;
+  align-items:flex-start;
+  overflow:hidden;
 }
+/* 左カラム: スケジュール + 時間指定タスク */
+.pl-left{
+  flex:1;
+  min-width:0;
+  padding:16px 14px 60px 20px;
+  overflow-y:auto;
+  min-height:100%;
+  -webkit-overflow-scrolling:touch;
+  border-right:1px solid var(--bdl);
+}
+/* 右カラム: 付箋エリア */
+.pl-right{
+  width:160px;
+  min-width:140px;
+  max-width:180px;
+  flex-shrink:0;
+  padding:12px 10px 60px 10px;
+  overflow-y:auto;
+  min-height:100%;
+  -webkit-overflow-scrolling:touch;
+  background:rgba(253,251,247,0.6);
+}
+/* スマホは縦並び */
+@media(max-width:600px){
+  .pl-body{flex-direction:column;overflow-y:auto}
+  .pl-left{height:auto;border-right:none;border-bottom:1px solid var(--bdl);overflow-y:visible}
+  .pl-right{width:100%;max-width:100%;height:auto;overflow-y:visible;padding:10px 14px 20px 20px}
+}
+
+/* ── 付箋デザイン ── */
+.sticky-note{
+  background:#FFF9C4;
+  border:1px solid #E8D870;
+  border-radius:2px 12px 12px 2px;
+  padding:12px 12px 14px;
+  margin-bottom:12px;
+  position:relative;
+  box-shadow:2px 3px 8px rgba(0,0,0,0.10), inset 0 -2px 4px rgba(0,0,0,0.04);
+}
+.sticky-note::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:28px;
+  background:rgba(0,0,0,0.04);
+  border-radius:2px 12px 0 0;
+}
+.sticky-title{
+  font-family:var(--hand-jp);
+  font-size:15px;font-weight:700;color:#5A4A00;
+  margin-bottom:8px;padding-bottom:6px;
+  border-bottom:1px dashed #D4C040;
+  position:relative;
+  display:flex;align-items:center;gap:6px;
+  margin-top:4px;
+}
+.sticky-cnt{
+  font-family:var(--mono);font-size:9px;
+  background:rgba(0,0,0,0.08);color:#5A4A00;
+  padding:1px 5px;border-radius:100px;
+}
+.sticky-item{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 0;border-bottom:1px dotted #D4C040;
+}
+.sticky-item:last-child{border-bottom:none}
+.sticky-item.done .sticky-txt{text-decoration:line-through;opacity:.45}
+.sticky-ck{
+  width:18px;height:18px;border:1.5px solid #C8B828;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:11px;
+  flex-shrink:0;cursor:pointer;-webkit-user-select:none;user-select:none;
+  background:#fff8;
+}
+.sticky-item.done .sticky-ck{background:#C8B828;border-color:#C8B828;color:#fff}
+.sticky-txt{
+  font-family:var(--hand-jp);font-size:14px;color:#3A3000;flex:1;
+  line-height:1.3;word-break:break-all;
+}
+.sticky-del{
+  width:22px;height:22px;border:none;background:none;cursor:pointer;
+  color:#B0A020;font-size:13px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;-webkit-user-select:none;user-select:none;
+}
+
+/* 右カラムの時間なしタスク */
+.side-tasks-hdr{
+  font-family:var(--hand-jp);font-size:14px;color:var(--inkm);
+  margin:14px 0 8px;
+  display:flex;align-items:center;gap:6px;
+  padding-bottom:4px;border-bottom:1.5px solid var(--bdl);
+}
+.side-task{
+  background:rgba(255,253,249,0.9);
+  border:1px solid var(--bd);border-radius:var(--Rs);
+  padding:9px 10px;margin-bottom:7px;
+}
+.side-task.done{opacity:.45}
+.side-task.done .side-task-ttl{text-decoration:line-through}
+.side-task-top{display:flex;align-items:flex-start;gap:7px}
+.side-task-ck{
+  width:20px;height:20px;border:1.5px solid var(--bd);border-radius:5px;
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  flex-shrink:0;cursor:pointer;-webkit-user-select:none;user-select:none;
+}
+.side-task.done .side-task-ck{background:var(--gr);border-color:var(--gr);color:#fff}
+.side-task-ttl{font-family:var(--hand-jp);font-size:14px;color:var(--ink);flex:1;line-height:1.3;word-break:break-all}
+.side-task-prio{font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:100px;flex-shrink:0}
+.side-task-acts{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.side-act{
+  padding:4px 8px;border:1px solid var(--bd);border-radius:100px;
+  background:var(--c);font-family:var(--hand-jp);font-size:11px;color:var(--inkm);
+  cursor:pointer;min-height:28px;display:inline-flex;align-items:center;gap:3px;
+  -webkit-user-select:none;user-select:none;
+}
+.side-act:active{background:var(--grl);border-color:var(--gr);color:var(--gr)}
 
 /* Section header — hand-written feel */
 .sec{
@@ -643,7 +769,8 @@ body{
         <div style="flex:1"></div>
       </div>
       <div class="pl-body" id="pl-body">
-        <!-- rendered by JS -->
+        <div class="pl-left" id="pl-left"><!-- rendered by JS --></div>
+        <div class="pl-right" id="pl-right"><!-- rendered by JS --></div>
       </div>
     </div>
   </div>
@@ -905,62 +1032,80 @@ function addTask(t){
 
 // ═══════════════ PLANNER RENDER ═══════════════
 function renderPlanner(){
-  const body=document.getElementById('pl-body');
-  body.innerHTML='';
+  const left=document.getElementById('pl-left');
+  const right=document.getElementById('pl-right');
+  left.innerHTML=''; right.innerHTML='';
   const data=ld(D);
-
-  // ── スケジュール ──
-  const scheds=(data.scheds||[]).slice().sort((a,b)=>(a.start||'').localeCompare(b.start||''));
-  if(scheds.length){
-    body.appendChild(mkSec('📅 スケジュール',scheds.length));
-    body.appendChild(mkAddSchedBtn());
-    scheds.forEach(s=>body.appendChild(buildSchedCard(s)));
-  } else {
-    body.appendChild(mkSec('📅 スケジュール',''));
-    body.appendChild(mkAddSchedBtn());
-  }
-
-  // ── 自動持ち越しバナー ──
   const tasks=data.tasks||[];
+
+  // ════ 左カラム ════
+  // スケジュール
+  const scheds=(data.scheds||[]).slice().sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+  left.appendChild(mkSec('📅 スケジュール', scheds.length||''));
+  left.appendChild(mkAddSchedBtn());
+  scheds.forEach(s=>left.appendChild(buildSchedCard(s)));
+
+  // 自動持ち越しバナー
   const autoCarried=tasks.filter(t=>t._carryFrom);
   if(autoCarried.length){
     const b=document.createElement('div');b.className='carry-banner';
-    b.innerHTML=`📎 前日から ${autoCarried.length}件 自動持ち越し`;
-    body.appendChild(b);
+    b.innerHTML=`📎 前日から ${autoCarried.length}件 持ち越し`;
+    left.appendChild(b);
   }
 
-  // ── 買い物リスト（カテゴリ「買うもの」をまとめる）──
-  const shopItems=tasks.filter(t=>t.category==='買うもの'&&!t.nextTime);
-  if(shopItems.length){
-    body.appendChild(buildShopSection(shopItems));
+  // 時間指定ありタスク（買うもの以外）
+  let withTime=tasks.filter(t=>!t.nextTime&&t.category!=='買うもの'&&t.deadlineTime);
+  if(SORT==='prio') withTime.sort((a,b)=>poOrd(a.priority)-poOrd(b.priority));
+  else if(SORT==='cat') withTime.sort((a,b)=>(a.category||'').localeCompare(b.category||''));
+  else if(SORT==='dl') withTime.sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
+  else withTime.sort((a,b)=>a.deadlineTime.localeCompare(b.deadlineTime));
+
+  if(withTime.length){
+    left.appendChild(mkSec('⏰ 時間指定タスク', withTime.length));
+    withTime.forEach(t=>left.appendChild(buildTask(t)));
   }
 
-  // ── 通常タスク ──
-  let normal=tasks.filter(t=>!t.nextTime&&t.category!=='買うもの');
-
-  // Sort
-  if(SORT==='time') normal.sort((a,b)=>(a.deadlineTime||'99:99').localeCompare(b.deadlineTime||'99:99'));
-  else if(SORT==='prio') normal.sort((a,b)=>poOrd(a.priority)-poOrd(b.priority));
-  else if(SORT==='cat') normal.sort((a,b)=>(a.category||'').localeCompare(b.category||''));
-  else if(SORT==='dl') normal.sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
-
-  if(normal.length){
-    body.appendChild(mkSec('📋 タスク',normal.length));
-    normal.forEach(t=>body.appendChild(buildTask(t)));
-  } else if(!shopItems.length && !scheds.length){
-    const e=document.createElement('div');e.className='empty';
-    e.innerHTML='<div class="empty-i">✦</div><div class="empty-t">今日のタスクはまだありません</div>';
-    body.appendChild(e);
-  }
-
-  // ── 次回回し ──
+  // 次回回し
   const nxt=tasks.filter(t=>t.nextTime);
   if(nxt.length){
     const ns=document.createElement('div');ns.className='next-sec';
-    const nl=document.createElement('div');nl.className='next-lbl';nl.innerHTML='🔄 次回やること';
-    ns.appendChild(nl);
+    ns.innerHTML='<div class="next-lbl">🔄 次回やること</div>';
     nxt.forEach(t=>ns.appendChild(buildTask(t)));
-    body.appendChild(ns);
+    left.appendChild(ns);
+  }
+
+  // 左が空の場合
+  if(!scheds.length&&!withTime.length&&!nxt.length&&!autoCarried.length){
+    const e=document.createElement('div');e.className='empty';
+    e.innerHTML='<div class="empty-i">✦</div><div class="empty-t">スケジュールを追加しよう</div>';
+    left.appendChild(e);
+  }
+
+  // ════ 右カラム ════
+  // 買い物リスト（付箋）
+  const shopItems=tasks.filter(t=>t.category==='買うもの'&&!t.nextTime);
+  if(shopItems.length){
+    right.appendChild(buildStickyNote(shopItems));
+  }
+
+  // 時間指定なしタスク（買うもの以外）
+  let noTime=tasks.filter(t=>!t.nextTime&&t.category!=='買うもの'&&!t.deadlineTime);
+  if(SORT==='prio') noTime.sort((a,b)=>poOrd(a.priority)-poOrd(b.priority));
+  else if(SORT==='cat') noTime.sort((a,b)=>(a.category||'').localeCompare(b.category||''));
+  else if(SORT==='dl') noTime.sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
+
+  if(noTime.length){
+    const hdr=document.createElement('div');hdr.className='side-tasks-hdr';
+    hdr.innerHTML=`📋 タスク <span style="font-family:var(--mono);font-size:9px;background:var(--paper);padding:1px 5px;border-radius:100px">${noTime.length}</span>`;
+    right.appendChild(hdr);
+    noTime.forEach(t=>right.appendChild(buildSideTask(t)));
+  }
+
+  if(!shopItems.length&&!noTime.length){
+    const e=document.createElement('div');
+    e.style.cssText='text-align:center;padding:20px 4px;opacity:.4;font-family:var(--hand-jp);font-size:13px;color:var(--inkm)';
+    e.textContent='タスクを追加してね';
+    right.appendChild(e);
   }
 }
 
@@ -975,26 +1120,43 @@ function mkAddSchedBtn(){
 }
 
 // ── 買い物リスト ──
-function buildShopSection(items){
-  const sec=document.createElement('div');sec.className='shop-section';
+function buildStickyNote(items){
   const done=items.filter(i=>i.done).length;
-  sec.innerHTML=`
-    <div class="shop-hdr" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.shop-chv').classList.toggle('open')">
-      <div class="shop-title">🛒 買い物リスト <span class="shop-cnt">${done}/${items.length}</span></div>
-      <span class="shop-chv open">▾</span>
-    </div>
-    <div class="shop-body open" id="shop-body"></div>`;
-  const body=sec.querySelector('#shop-body');
+  const sec=document.createElement('div');sec.className='sticky-note';
+  const hdr=document.createElement('div');hdr.className='sticky-title';
+  hdr.innerHTML=`🛒 買い物 <span class="sticky-cnt">${done}/${items.length}</span>`;
+  sec.appendChild(hdr);
   items.forEach(t=>{
     const row=document.createElement('div');
-    row.className='shop-item'+(t.done?' done':'');
+    row.className='sticky-item'+(t.done?' done':'');
     row.innerHTML=`
-      <div class="shop-ck" onclick="togDone(${t.id},'${D}')">${t.done?'✓':''}</div>
-      <div class="shop-item-txt">${esc(t.content)}</div>
-      <button class="shop-del" onclick="delTask(${t.id},'${D}')">✕</button>`;
-    body.appendChild(row);
+      <div class="sticky-ck" onclick="togDone(${t.id},'${D}')">${t.done?'✓':''}</div>
+      <div class="sticky-txt">${esc(t.content)}</div>
+      <button class="sticky-del" onclick="delTask(${t.id},'${D}')">✕</button>`;
+    sec.appendChild(row);
   });
   return sec;
+}
+
+// 右カラム用のコンパクトタスク
+function buildSideTask(t){
+  const src=D;
+  const div=document.createElement('div');div.className='side-task'+(t.done?' done':'');div.id='stk-'+t.id;
+  const carryFrom=t._carryFrom?`<span class="carry-tag" style="font-size:10px">📎</span>`:'';
+  div.innerHTML=`
+    <div class="side-task-top">
+      <div class="side-task-ck" onclick="togDone(${t.id},'${src}')">${t.done?'✓':''}</div>
+      <div class="side-task-ttl">${esc(t.content)}${carryFrom}</div>
+      <div class="side-task-prio ${poCls(t.priority)}">${poLbl(t.priority)}</div>
+    </div>
+    ${t.category?`<div style="font-family:var(--mono);font-size:9px;color:var(--inkm);padding-left:27px;margin-top:3px">${esc(t.category)}</div>`:''}
+    <div class="side-task-acts">
+      <button class="side-act" onclick="togDone(${t.id},'${src}')">${t.done?'↩':'✓'}</button>
+      <button class="side-act" onclick="openCarry(${t.id},'${src}')">📎</button>
+      <button class="side-act" onclick="togNext(${t.id},'${src}')">🔄</button>
+      <button class="side-act" onclick="delTask(${t.id},'${src}')">✕</button>
+    </div>`;
+  return div;
 }
 
 // ── Schedule card ──
@@ -1215,6 +1377,27 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
 
 // ═══════════════ INIT ═══════════════
+// ── Service Worker 登録（PWAオフライン対応）──
+if('serviceWorker' in navigator){
+  const swCode=`
+const CACHE='planner-v1';
+const ASSETS=[self.location.pathname];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));
+  self.skipWaiting();
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+  self.clients.claim();
+});
+self.addEventListener('fetch',e=>{
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match(self.location.pathname))));
+});`;
+  const blob=new Blob([swCode],{type:'text/javascript'});
+  const swUrl=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+
 (function(){
   // まず自動持ち越しを処理
   runAutoCarry();
