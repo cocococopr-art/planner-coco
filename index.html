@@ -183,7 +183,8 @@ body{font-family:var(--HJ);background:var(--c);color:var(--ink);
 
 /* ══ PAGE 1 — PLANNER ══ */
 #pg1{display:none;background:var(--c)}
-#pg1.on{display:flex;flex-direction:column}
+#pg1.on{display:block}
+.pg1-inner{display:flex;flex-direction:column;height:100%;overflow:hidden}
 
 /* Planner top bar */
 .pl-top{
@@ -232,9 +233,10 @@ body{font-family:var(--HJ);background:var(--c);color:var(--ink);
 
 /* Planner scrollable body */
 .pl-scroll{
-  flex:1;min-height:0;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
+  flex:1;
+  min-height:0;
 }
 
 /* 2-column layout inside planner */
@@ -501,9 +503,7 @@ body{font-family:var(--HJ);background:var(--c);color:var(--ink);
   .mbtn{display:flex}
 }
 @media(min-width:769px){
-  #sb{position:relative;transform:none!important;flex-shrink:0}
-  #shell{flex-direction:row}
-  .mbtn{display:none}
+  .mbtn{display:flex}
 }
 
 /* ══ PRINT ══ */
@@ -511,7 +511,8 @@ body{font-family:var(--HJ);background:var(--c);color:var(--ink);
   #sb,#tabbar,.sort-bar,.add-sc,.sc-acts,.tk-acts,.stk-acts,.hbtn,
   .habits,.sh-body,.bk{display:none!important}
   #pg0{display:none!important}
-  #pg1{display:flex!important;flex-direction:column!important;height:auto!important}
+  #pg1{display:block!important;height:auto!important}
+  .pg1-inner{display:flex!important;flex-direction:column!important;height:auto!important}
   .pl-scroll{overflow:visible!important;flex:none!important}
   .pl-cols{min-height:0!important}
   body{overflow:auto!important}
@@ -634,6 +635,7 @@ body{font-family:var(--HJ);background:var(--c);color:var(--ink);
 
     <!-- PAGE 1 -->
     <div class="pg" id="pg1">
+      <div class="pg1-inner">
       <div class="pl-top">
         <div class="pl-date" id="pl-date">— 月 — 日</div>
         <input class="goal-inp" id="goal-inp" placeholder="今日の目標…" oninput="saveGoal()" onkeydown="return noEnt(event)">
@@ -658,6 +660,7 @@ body{font-family:var(--HJ);background:var(--c);color:var(--ink);
           <div class="pl-side" id="pl-side"></div>
         </div>
       </div>
+      </div><!-- /pg1-inner -->
     </div>
 
   </div><!-- /pages -->
